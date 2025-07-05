@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - CodeAlpha</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🔐 CodeAlpha Login</h1>
+    <nav><a href="index.html">Home</a> | <a href="register.html">Register</a></nav>
+  </header>
+
+  <main style="padding: 20px;">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required /><br /><br />
+      <input type="password" id="password" placeholder="Password" required /><br /><br />
+      <button type="submit">Login</button>
+    </form>
+  </main>
+
+  <script>
+  const form = document.getElementById("loginForm");
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (!user) {
+      alert("Invalid email or password.");
+      return;
+    }
+
+    // ✅ Save user info to localStorage for dashboard
+    localStorage.setItem("userId", user.email); // using email as fake ID
+    localStorage.setItem("userName", user.name);
+    localStorage.setItem("userEmail", user.email);
+
+    alert("Login successful!");
+    location.href = "dashboard.html";
+  });
+</script>
+
+</body>
+</html>

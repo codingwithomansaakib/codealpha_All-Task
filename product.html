@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Details - CodeAlpha</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <h1>🛍️ CodeAlpha e-Commerce</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="cart.html">Cart 🛒</a>
+    </nav>
+  </header>
+
+  <main id="product-detail" style="padding: 20px;"></main>
+  <script src="script.js"></script>
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const container = document.getElementById("product-detail");
+      const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+      if (!product) {
+        container.innerHTML = "<p>Product not found.</p>";
+        return;
+      }
+
+      container.innerHTML = `
+      <h2>${product.name}</h2>
+      <img src="${product.image}" alt="${product.name}" style="width:200px; height:auto;" />
+      <p><strong>Price:</strong> ₹${product.price}</p>
+      <p><strong>Description:</strong> ${product.description || "No description available."}</p>
+      <button onclick="addToCart(${product.id || 0})">Add to Cart</button>
+    `;
+    });
+
+    function addToCart() {
+      const product = JSON.parse(localStorage.getItem("selectedProduct"));
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      const existing = cart.find(item => item.name === product.name);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Added to cart!");
+    }
+
+
+  </script>
+</body>
+
+</html>

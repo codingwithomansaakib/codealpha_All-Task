@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Dashboard - CodeAlpha</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      background: linear-gradient(to right, #ece9e6, #ffffff);
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .dashboard-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h3 {
+      margin-bottom: 10px;
+      color: #333;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .nav {
+      background: #333;
+      padding: 12px 24px;
+      color: white;
+      text-align: center;
+    }
+
+    .nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+    }
+
+    .nav a:hover {
+      text-decoration: underline;
+    }
+
+    .logout-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      float: right;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav">
+    <span>👤 Welcome to Dashboard</span>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart</a>
+    <a href="product.html">Shop</a>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="dashboard-container">
+    <h2>My Account</h2>
+
+    <div class="section">
+      <h3>Personal Information</h3>
+      <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+    </div>
+
+    <div class="section">
+      <h3>Recent Orders</h3>
+      <ul id="orderList">
+        <li>Loading your orders...</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Mock user session
+    const userId = localStorage.getItem("userId");
+    const userName = localStorage.getItem("userName");
+    const userEmail = localStorage.getItem("userEmail");
+
+    document.getElementById("userName").innerText = userName || "Guest";
+    document.getElementById("userEmail").innerText = userEmail || "Not logged in";
+
+    function logout() {
+      localStorage.clear();
+      alert("Logged out!");
+      window.location.href = "login.html";
+    }
+
+    async function loadOrders() {
+      const orderList = document.getElementById("orderList");
+      orderList.innerHTML = "<li>Loading...</li>";
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/${userId}`);
+        const orders = await res.json();
+        if (orders.length === 0) {
+          orderList.innerHTML = "<li>No recent orders</li>";
+          return;
+        }
+
+        orderList.innerHTML = "";
+        orders.forEach(order => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <strong>Total:</strong> ₹${order.total} <br/>
+            <small>Placed on ${new Date(order.createdAt).toLocaleDateString()}</small>
+          `;
+          orderList.appendChild(li);
+        });
+      } catch (err) {
+        orderList.innerHTML = "<li>Failed to load orders</li>";
+      }
+    }
+
+    if (userId) {
+      loadOrders();
+    } else {
+      document.getElementById("orderList").innerHTML = "<li>Please log in to view orders.</li>";
+    }
+  </script>
+</body>
+</html>
